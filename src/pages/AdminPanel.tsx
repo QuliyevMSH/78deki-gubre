@@ -127,6 +127,7 @@ export default function AdminPanel() {
 
   const handleDeleteProduct = async (id: number) => {
     try {
+      // First, delete all basket items referencing this product
       const { error: basketError } = await supabase
         .from("basket")
         .delete()
@@ -134,6 +135,7 @@ export default function AdminPanel() {
 
       if (basketError) throw basketError;
 
+      // Then delete the product
       const { error: productError } = await supabase
         .from("products")
         .delete()
