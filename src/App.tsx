@@ -39,7 +39,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route
-          path="/admin"
+          path="/admin/*"
           element={
             <AdminRoute>
               <AdminPanel />

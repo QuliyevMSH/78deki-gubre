@@ -164,27 +164,36 @@ export default function AdminPanel() {
       <main className="pl-[240px] p-8">
         <div className="max-w-[1200px] mx-auto">
           <Routes>
-            <Route path="/" element={
-              <DashboardView
-                filteredProducts={filteredProducts}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-              />
-            } />
-            <Route path="/add" element={
-              <AddProductForm
-                newProduct={newProduct}
-                setNewProduct={setNewProduct}
-                handleAddProduct={handleAddProduct}
-              />
-            } />
-            <Route path="/products" element={
-              <ProductsTable
-                products={products}
-                setEditingProduct={setEditingProduct}
-                handleDeleteProduct={handleDeleteProduct}
-              />
-            } />
+            <Route
+              path="/"
+              element={
+                <DashboardView
+                  filteredProducts={filteredProducts}
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                />
+              }
+            />
+            <Route
+              path="/add"
+              element={
+                <AddProductForm
+                  newProduct={newProduct}
+                  setNewProduct={setNewProduct}
+                  handleAddProduct={handleAddProduct}
+                />
+              }
+            />
+            <Route
+              path="/products"
+              element={
+                <ProductsTable
+                  products={products}
+                  setEditingProduct={setEditingProduct}
+                  handleDeleteProduct={handleDeleteProduct}
+                />
+              }
+            />
             <Route path="/users" element={<UserManagement />} />
           </Routes>
         </div>
