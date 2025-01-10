@@ -8,6 +8,7 @@ import { UserManagement } from "@/components/admin/UserManagement";
 import { DashboardView } from "@/components/admin/dashboard/DashboardView";
 import { AddProductForm } from "@/components/admin/products/AddProductForm";
 import { ProductsTable } from "@/components/admin/products/ProductsTable";
+import { EditProductForm } from "@/components/admin/products/EditProductForm";
 
 export default function AdminPanel() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -92,20 +93,18 @@ export default function AdminPanel() {
     }
   };
 
-  const handleUpdateProduct = async () => {
-    if (!editingProduct) return;
-
+  const handleUpdateProduct = async (updatedProduct: Product) => {
     try {
       const { error } = await supabase
         .from("products")
         .update({
-          name: editingProduct.name,
-          price: editingProduct.price,
-          description: editingProduct.description,
-          image: editingProduct.image,
-          category: editingProduct.category,
+          name: updatedProduct.name,
+          price: updatedProduct.price,
+          description: updatedProduct.description,
+          image: updatedProduct.image,
+          category: updatedProduct.category,
         })
-        .eq("id", editingProduct.id);
+        .eq("id", updatedProduct.id);
 
       if (error) throw error;
 
@@ -187,11 +186,18 @@ export default function AdminPanel() {
             <Route
               path="/products"
               element={
-                <ProductsTable
-                  products={products}
-                  setEditingProduct={setEditingProduct}
-                  handleDeleteProduct={handleDeleteProduct}
-                />
+                <>
+                  <ProductsTable
+                    products={products}
+                    setEditingProduct={setEditingProduct}
+                    handleDeleteProduct={handleDeleteProduct}
+                  />
+                  <EditProductForm
+                    product={editingProduct}
+                    onClose={() => setEditingProduct(null)}
+                    onUpdate={handleUpdateProduct}
+                  />
+                </>
               }
             />
             <Route path="/users" element={<UserManagement />} />
