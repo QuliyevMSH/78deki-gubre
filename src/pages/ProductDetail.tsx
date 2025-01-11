@@ -2,17 +2,28 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Minus, Plus, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { formatPrice } from '@/lib/utils';
 import { Product } from '@/types';
+import { CommentSection } from '@/components/comments/CommentSection';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -185,6 +196,10 @@ const ProductDetail = () => {
               </Button>
             </div>
           </div>
+        </div>
+
+        <div className="mt-16">
+          <CommentSection productId={parseInt(id as string)} user={user} />
         </div>
       </div>
     </div>
