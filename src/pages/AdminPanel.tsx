@@ -9,6 +9,9 @@ import { DashboardView } from "@/components/admin/dashboard/DashboardView";
 import { AddProductForm } from "@/components/admin/products/AddProductForm";
 import { ProductsTable } from "@/components/admin/products/ProductsTable";
 import { EditProductForm } from "@/components/admin/products/EditProductForm";
+import { CommentsManagement } from "@/components/admin/comments/CommentsManagement";
+
+// ... keep existing code (state declarations and functions)
 
 export default function AdminPanel() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -194,26 +197,8 @@ export default function AdminPanel() {
       <main className="pl-[240px] p-8">
         <div className="max-w-[1200px] mx-auto">
           <Routes>
-            <Route
-              path="/"
-              element={
-                <DashboardView
-                  filteredProducts={filteredProducts}
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                />
-              }
-            />
-            <Route
-              path="/add"
-              element={
-                <AddProductForm
-                  newProduct={newProduct}
-                  setNewProduct={setNewProduct}
-                  handleAddProduct={handleAddProduct}
-                />
-              }
-            />
+            <Route path="/" element={<DashboardView filteredProducts={filteredProducts} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
+            <Route path="/add" element={<AddProductForm newProduct={newProduct} setNewProduct={setNewProduct} handleAddProduct={handleAddProduct} />} />
             <Route
               path="/products"
               element={
@@ -232,6 +217,7 @@ export default function AdminPanel() {
               }
             />
             <Route path="/users" element={<UserManagement />} />
+            <Route path="/comments" element={<CommentsManagement />} />
           </Routes>
         </div>
       </main>
