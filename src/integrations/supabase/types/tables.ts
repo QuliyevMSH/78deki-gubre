@@ -34,6 +34,55 @@ export interface Tables {
       },
     ]
   }
+  comments: {
+    Row: {
+      id: number
+      content: string
+      created_at: string
+      user_id: string
+      product_id: number
+      parent_id: number | null
+    }
+    Insert: {
+      id?: number
+      content: string
+      created_at?: string
+      user_id: string
+      product_id: number
+      parent_id?: number | null
+    }
+    Update: {
+      id?: number
+      content?: string
+      created_at?: string
+      user_id?: string
+      product_id?: number
+      parent_id?: number | null
+    }
+    Relationships: [
+      {
+        foreignKeyName: "comments_product_id_fkey"
+        columns: ["product_id"]
+        isOneToOne: false
+        referencedRelation: "products"
+        referencedColumns: ["id"]
+      },
+      {
+        foreignKeyName: "comments_user_id_fkey"
+        columns: ["user_id"]
+        isOneToOne: false
+        referencedRelation: "users"
+        referencedColumns: ["id"]
+      },
+      {
+        foreignKeyName: "comments_parent_id_fkey"
+        columns: ["parent_id"]
+        isOneToOne: false
+        referencedRelation: "comments"
+        referencedColumns: ["id"]
+      }
+    ]
+  }
   feddback: {
     Row: {
       content: string
