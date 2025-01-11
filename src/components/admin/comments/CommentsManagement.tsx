@@ -22,10 +22,10 @@ interface Comment {
   user: {
     first_name: string | null;
     last_name: string | null;
-  };
+  } | null;
   product: {
     name: string;
-  };
+  } | null;
 }
 
 export const CommentsManagement = () => {
@@ -139,9 +139,9 @@ export const CommentsManagement = () => {
           {comments.map((comment) => (
             <TableRow key={comment.id}>
               <TableCell>
-                {comment.user.first_name} {comment.user.last_name}
+                {comment.user ? `${comment.user.first_name || ''} ${comment.user.last_name || ''}` : 'Naməlum istifadəçi'}
               </TableCell>
-              <TableCell>{comment.product.name}</TableCell>
+              <TableCell>{comment.product?.name || 'Naməlum məhsul'}</TableCell>
               <TableCell className="max-w-md">
                 {editingId === comment.id ? (
                   <Textarea

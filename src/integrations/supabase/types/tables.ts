@@ -151,7 +151,7 @@ export interface Tables {
       created_at?: string;
       feedback?: string | null;
       first_name?: string | null;
-      id?: string;
+      id: string;
       last_name?: string | null;
       role?: UserRole;
       updated_at?: string | null;
