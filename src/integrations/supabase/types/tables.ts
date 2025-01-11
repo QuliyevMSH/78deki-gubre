@@ -31,7 +31,7 @@ export interface Tables {
         isOneToOne: false
         referencedRelation: "products"
         referencedColumns: ["id"]
-      },
+      }
     ]
   }
   comments: {
@@ -71,7 +71,7 @@ export interface Tables {
         foreignKeyName: "comments_user_id_fkey"
         columns: ["user_id"]
         isOneToOne: false
-        referencedRelation: "users"
+        referencedRelation: "profiles"
         referencedColumns: ["id"]
       },
       {
