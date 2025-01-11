@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { LayoutDashboard, PlusCircle, Package, Users } from "lucide-react";
+import { LayoutDashboard, PlusCircle, Package, Users, MessageSquare } from "lucide-react";
 import { SidebarLink } from "./navigation/SidebarLink";
 import { SocialLinks } from "./navigation/SocialLinks";
 
@@ -36,6 +36,12 @@ export const AdminSidebar = () => {
           href="/admin/users"
           label="İstifadəçilər"
           isActive={location.pathname === "/admin/users"}
+        />
+        <SidebarLink
+          icon={<MessageSquare />}
+          href="/admin/comments"
+          label="Rəylər"
+          isActive={location.pathname === "/admin/comments"}
         />
       </nav>
 
