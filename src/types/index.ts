@@ -16,7 +16,7 @@ export interface Comment {
   product_id: number;
   user_id: string;
   content: string;
-  parent_id?: number;
+  parent_id?: number | null;
   created_at: string;
   user: {
     first_name: string | null;

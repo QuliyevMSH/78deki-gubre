@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { Comment } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -23,25 +23,35 @@ export const CommentSection = ({ productId, user }: CommentSectionProps) => {
 
   const fetchComments = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
         .select(`
-          *,
+          id,
+          content,
+          created_at,
+          user_id,
+          product_id,
+          parent_id,
           user:profiles(first_name, last_name, avatar_url)
         `)
         .eq('product_id', productId)
         .is('parent_id', null)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (commentsError) throw commentsError;
 
       // Fetch replies for each comment
       const commentsWithReplies = await Promise.all(
-        (data || []).map(async (comment) => {
+        (commentsData || []).map(async (comment) => {
           const { data: replies, error: repliesError } = await supabase
             .from('comments')
             .select(`
-              *,
+              id,
+              content,
+              created_at,
+              user_id,
+              product_id,
+              parent_id,
               user:profiles(first_name, last_name, avatar_url)
             `)
             .eq('parent_id', comment.id)
