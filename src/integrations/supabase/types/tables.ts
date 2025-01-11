@@ -38,25 +38,25 @@ export interface Tables {
     Row: {
       id: number;
       content: string;
+      created_at: string;
       user_id: string;
       product_id: number;
-      created_at: string;
       parent_id: number | null;
     };
     Insert: {
       id?: number;
       content: string;
+      created_at?: string;
       user_id: string;
       product_id: number;
-      created_at?: string;
       parent_id?: number | null;
     };
     Update: {
       id?: number;
       content?: string;
+      created_at?: string;
       user_id?: string;
       product_id?: number;
-      created_at?: string;
       parent_id?: number | null;
     };
     Relationships: [
