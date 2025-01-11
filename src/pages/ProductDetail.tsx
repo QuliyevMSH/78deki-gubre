@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { formatPrice } from '@/lib/utils';
 import { Product } from '@/types';
+import CommentSection from '@/components/comments/CommentSection';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -185,6 +186,10 @@ const ProductDetail = () => {
               </Button>
             </div>
           </div>
+        </div>
+        
+        <div className="mt-12">
+          <CommentSection />
         </div>
       </div>
     </div>

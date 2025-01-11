@@ -109,4 +109,53 @@ export interface Tables {
     }
     Relationships: []
   }
+  comments: {
+    Row: {
+      id: number
+      content: string
+      user_id: string
+      product_id: number
+      created_at: string
+      parent_id: number | null
+    }
+    Insert: {
+      id?: number
+      content: string
+      user_id: string
+      product_id: number
+      created_at?: string
+      parent_id?: number | null
+    }
+    Update: {
+      id?: number
+      content?: string
+      user_id?: string
+      product_id?: number
+      created_at?: string
+      parent_id?: number | null
+    }
+    Relationships: [
+      {
+        foreignKeyName: "comments_user_id_fkey"
+        columns: ["user_id"]
+        isOneToOne: false
+        referencedRelation: "profiles"
+        referencedColumns: ["id"]
+      },
+      {
+        foreignKeyName: "comments_product_id_fkey"
+        columns: ["product_id"]
+        isOneToOne: false
+        referencedRelation: "products"
+        referencedColumns: ["id"]
+      },
+      {
+        foreignKeyName: "comments_parent_id_fkey"
+        columns: ["parent_id"]
+        isOneToOne: false
+        referencedRelation: "comments"
+        referencedColumns: ["id"]
+      }
+    ]
+  }
 }
