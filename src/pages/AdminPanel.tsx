@@ -55,6 +55,69 @@ export default function AdminPanel() {
     }
   };
 
+  const handleDeleteProduct = async (id: number) => {
+    try {
+      // First, try to find any basket items with this product
+      const { data: basketItems } = await supabase
+        .from("basket")
+        .select("*")
+        .eq("product_id", id);
+
+      if (basketItems && basketItems.length > 0) {
+        // Create a deleted product placeholder
+        const deletedProduct = {
+          name: "Məhsul silinib",
+          price: 0,
+          description: "Bu məhsul artıq mövcud deyil",
+          image: "/placeholder.svg",
+          category: "Silinmiş"
+        };
+
+        // Insert the placeholder product
+        const { data: newProduct, error: insertError } = await supabase
+          .from("products")
+          .insert([deletedProduct])
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+
+        // Update all basket items to point to the new placeholder product
+        if (newProduct) {
+          const { error: updateError } = await supabase
+            .from("basket")
+            .update({ product_id: newProduct.id })
+            .eq("product_id", id);
+
+          if (updateError) throw updateError;
+        }
+      }
+
+      // Finally delete the original product
+      const { error: deleteError } = await supabase
+        .from("products")
+        .delete()
+        .eq("id", id);
+
+      if (deleteError) throw deleteError;
+
+      toast({
+        title: "Uğurlu",
+        description: "Məhsul silindi",
+      });
+
+      setProducts(prev => prev.filter(product => product.id !== id));
+      setFilteredProducts(prev => prev.filter(product => product.id !== id));
+    } catch (error: any) {
+      console.error("Error in delete operation:", error);
+      toast({
+        variant: "destructive",
+        title: "Xəta",
+        description: error.message || "Məhsul silinmədi",
+      });
+    }
+  };
+
   const handleAddProduct = async () => {
     try {
       const { error } = await supabase.from("products").insert([
@@ -121,47 +184,6 @@ export default function AdminPanel() {
         variant: "destructive",
         title: "Xəta",
         description: "Məhsul yenilənmədi",
-      });
-    }
-  };
-
-  const handleDeleteProduct = async (id: number) => {
-    try {
-      // First, delete all basket items referencing this product
-      const { error: basketError } = await supabase
-        .from("basket")
-        .delete()
-        .eq("product_id", id);
-
-      if (basketError) {
-        console.error("Error deleting basket items:", basketError);
-        throw basketError;
-      }
-
-      // Then delete the product
-      const { error: productError } = await supabase
-        .from("products")
-        .delete()
-        .eq("id", id);
-
-      if (productError) {
-        console.error("Error deleting product:", productError);
-        throw productError;
-      }
-
-      toast({
-        title: "Uğurlu",
-        description: "Məhsul silindi",
-      });
-
-      setProducts(prev => prev.filter(product => product.id !== id));
-      setFilteredProducts(prev => prev.filter(product => product.id !== id));
-    } catch (error: any) {
-      console.error("Error in delete operation:", error);
-      toast({
-        variant: "destructive",
-        title: "Xəta",
-        description: error.message || "Məhsul silinmədi",
       });
     }
   };
