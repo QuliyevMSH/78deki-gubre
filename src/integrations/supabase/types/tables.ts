@@ -2,38 +2,6 @@ import { Json } from './json';
 import { UserRole } from './enums';
 
 export interface Tables {
-  basket: {
-    Row: {
-      created_at: string;
-      id: number;
-      product_id: number | null;
-      quantity: number;
-      user_id: string | null;
-    };
-    Insert: {
-      created_at?: string;
-      id?: number;
-      product_id?: number | null;
-      quantity?: number;
-      user_id?: string | null;
-    };
-    Update: {
-      created_at?: string;
-      id?: number;
-      product_id?: number | null;
-      quantity?: number;
-      user_id?: string | null;
-    };
-    Relationships: [
-      {
-        foreignKeyName: "basket_product_id_fkey";
-        columns: ["product_id"];
-        isOneToOne: false;
-        referencedRelation: "products";
-        referencedColumns: ["id"];
-      }
-    ];
-  };
   comments: {
     Row: {
       id: number;
@@ -79,6 +47,38 @@ export interface Tables {
         columns: ["parent_id"];
         isOneToOne: false;
         referencedRelation: "comments";
+        referencedColumns: ["id"];
+      }
+    ];
+  };
+  basket: {
+    Row: {
+      created_at: string;
+      id: number;
+      product_id: number | null;
+      quantity: number;
+      user_id: string | null;
+    };
+    Insert: {
+      created_at?: string;
+      id?: number;
+      product_id?: number | null;
+      quantity?: number;
+      user_id?: string | null;
+    };
+    Update: {
+      created_at?: string;
+      id?: number;
+      product_id?: number | null;
+      quantity?: number;
+      user_id?: string | null;
+    };
+    Relationships: [
+      {
+        foreignKeyName: "basket_product_id_fkey";
+        columns: ["product_id"];
+        isOneToOne: false;
+        referencedRelation: "products";
         referencedColumns: ["id"];
       }
     ];
