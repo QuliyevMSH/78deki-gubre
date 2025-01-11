@@ -61,17 +61,17 @@ export interface Tables {
     };
     Relationships: [
       {
+        foreignKeyName: "comments_user_id_fkey";
+        columns: ["user_id"];
+        isOneToOne: false;
+        referencedRelation: "users";
+        referencedColumns: ["id"];
+      },
+      {
         foreignKeyName: "comments_product_id_fkey";
         columns: ["product_id"];
         isOneToOne: false;
         referencedRelation: "products";
-        referencedColumns: ["id"];
-      },
-      {
-        foreignKeyName: "comments_user_id_fkey";
-        columns: ["user_id"];
-        isOneToOne: false;
-        referencedRelation: "profiles";
         referencedColumns: ["id"];
       },
       {
