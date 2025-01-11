@@ -128,33 +128,40 @@ export default function AdminPanel() {
   const handleDeleteProduct = async (id: number) => {
     try {
       // First, delete all basket items referencing this product
-      const { error: basketError } = await supabase
+      const { data: basketData, error: basketError } = await supabase
         .from("basket")
         .delete()
         .eq("product_id", id);
 
-      if (basketError) throw basketError;
+      if (basketError) {
+        console.error("Error deleting basket items:", basketError);
+        throw basketError;
+      }
 
       // Then delete the product
-      const { error: productError } = await supabase
+      const { data: productData, error: productError } = await supabase
         .from("products")
         .delete()
         .eq("id", id);
 
-      if (productError) throw productError;
+      if (productError) {
+        console.error("Error deleting product:", productError);
+        throw productError;
+      }
 
       toast({
         title: "Uğurlu",
         description: "Məhsul silindi",
       });
 
-      fetchProducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
+      setProducts(prev => prev.filter(product => product.id !== id));
+      setFilteredProducts(prev => prev.filter(product => product.id !== id));
+    } catch (error: any) {
+      console.error("Error in delete operation:", error);
       toast({
         variant: "destructive",
         title: "Xəta",
-        description: "Məhsul silinmədi",
+        description: error.message || "Məhsul silinmədi",
       });
     }
   };
