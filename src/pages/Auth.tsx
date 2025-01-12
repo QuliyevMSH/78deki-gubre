@@ -65,7 +65,7 @@ export default function Auth() {
         {/* Left side - Image */}
         <div className="hidden md:block relative overflow-hidden rounded-xl">
           <img 
-            src="/lovable-uploads/f310e059-aa26-411e-aad7-c0c997e8ba2a.png" 
+            src="/lovable-uploads/0e1e6550-b588-485a-bf15-83042085c242.png" 
             alt="Login background" 
             className="w-full h-full object-cover"
           />
