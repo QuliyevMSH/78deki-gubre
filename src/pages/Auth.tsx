@@ -75,7 +75,7 @@ export default function Auth() {
         <div className="flex flex-col justify-center">
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-8">
             <h1 className="text-3xl font-semibold text-white mb-6 text-center">
-              Hesab yarat / Daxil ol
+              Hesab yarat və ya Daxil ol
             </h1>
 
             {errorMessage && (
