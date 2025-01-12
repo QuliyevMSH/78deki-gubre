@@ -139,10 +139,9 @@ export const CommentsManagement = () => {
           {comments.map((comment) => (
             <TableRow key={comment.id}>
               <TableCell>
-                {comment.user?.first_name || comment.user?.last_name ? 
-                  `${comment.user.first_name || ''} ${comment.user.last_name || ''}`.trim() : 
-                  'Naməlum istifadəçi'
-                }
+                {comment.user?.first_name && comment.user?.last_name
+                  ? `${comment.user.first_name} ${comment.user.last_name}`
+                  : 'Naməlum istifadəçi'}
               </TableCell>
               <TableCell>{comment.product?.name || 'Naməlum məhsul'}</TableCell>
               <TableCell className="max-w-md">

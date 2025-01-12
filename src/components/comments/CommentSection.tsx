@@ -19,7 +19,7 @@ interface Comment {
     first_name: string | null;
     last_name: string | null;
     avatar_url: string | null;
-  };
+  } | null;
 }
 
 export default function CommentSection() {
@@ -35,12 +35,7 @@ export default function CommentSection() {
       const { data, error } = await supabase
         .from('comments')
         .select(`
-          id,
-          content,
-          created_at,
-          user_id,
-          product_id,
-          parent_id,
+          *,
           user:profiles(first_name, last_name, avatar_url)
         `)
         .eq('product_id', id)
@@ -135,15 +130,17 @@ export default function CommentSection() {
           <div key={comment.id} className="bg-white p-4 rounded-lg shadow">
             <div className="flex items-center gap-3 mb-3">
               <Avatar>
-                <AvatarImage src={comment.user.avatar_url || undefined} />
+                <AvatarImage src={comment.user?.avatar_url || undefined} />
                 <AvatarFallback>
-                  {comment.user.first_name?.[0]}
-                  {comment.user.last_name?.[0]}
+                  {comment.user?.first_name?.[0] || ''}
+                  {comment.user?.last_name?.[0] || ''}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-medium">
-                  {comment.user.first_name} {comment.user.last_name}
+                  {comment.user?.first_name && comment.user?.last_name 
+                    ? `${comment.user.first_name} ${comment.user.last_name}`
+                    : 'Naməlum istifadəçi'}
                 </p>
                 <p className="text-sm text-gray-500">
                   {format(new Date(comment.created_at), 'dd.MM.yyyy HH:mm')}
