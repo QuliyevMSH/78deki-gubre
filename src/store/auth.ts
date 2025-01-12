@@ -6,7 +6,7 @@ interface AuthState {
   user: User | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   signOut: () => Promise<void>;
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
@@ -30,13 +30,29 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw error;
     }
   },
-  signUp: async (email, password) => {
+  signUp: async (email, password, firstName, lastName) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          },
+        },
       });
       if (error) throw error;
+      
+      if (data.user) {
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          first_name: firstName,
+          last_name: lastName,
+          created_at: new Date().toISOString(),
+        });
+      }
+      
       set({ user: data.user });
     } catch (error) {
       console.error('Error signing up:', error);

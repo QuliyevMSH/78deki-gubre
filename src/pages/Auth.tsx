@@ -62,48 +62,91 @@ export default function Auth() {
   }, [navigate, user]);
 
   return (
-    <div className="min-h-screen bg-emerald-600 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-2xl font-semibold text-center mb-6">
-          Giriş / Qeydiyyat
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8 bg-black/20 backdrop-blur-lg rounded-2xl p-8">
+        {/* Left side - Image */}
+        <div className="hidden md:block relative overflow-hidden rounded-xl">
+          <img 
+            src="/lovable-uploads/f310e059-aa26-411e-aad7-c0c997e8ba2a.png" 
+            alt="Login background" 
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-        {errorMessage && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertDescription>{errorMessage}</AlertDescription>
-          </Alert>
-        )}
+        {/* Right side - Auth form */}
+        <div className="flex flex-col justify-center">
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-8">
+            <h1 className="text-3xl font-semibold text-white mb-6 text-center">
+              Hesab yarat / Daxil ol
+            </h1>
 
-        <SupabaseAuth
-          supabaseClient={supabase}
-          appearance={{
-            theme: ThemeSupa,
-            variables: {
-              default: {
-                colors: {
-                  brand: '#059669',
-                  brandAccent: '#047857',
-                }
-              }
-            }
-          }}
-          localization={{
-            variables: {
-              sign_in: {
-                email_label: 'Email',
-                password_label: 'Şifrə',
-                button_label: 'Giriş',
-                loading_button_label: 'Giriş edilir...',
-              },
-              sign_up: {
-                email_label: 'Email',
-                password_label: 'Şifrə',
-                button_label: 'Qeydiyyat',
-                loading_button_label: 'Qeydiyyat edilir...',
-              },
-            }
-          }}
-        />
+            {errorMessage && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>{errorMessage}</AlertDescription>
+              </Alert>
+            )}
+
+            <SupabaseAuth
+              supabaseClient={supabase}
+              appearance={{
+                theme: ThemeSupa,
+                variables: {
+                  default: {
+                    colors: {
+                      brand: '#059669',
+                      brandAccent: '#047857',
+                      brandButtonText: 'white',
+                      defaultButtonBackground: 'white',
+                      defaultButtonBackgroundHover: '#f9fafb',
+                      inputBackground: 'white',
+                      inputBorder: 'transparent',
+                      inputBorderHover: '#059669',
+                      inputBorderFocus: '#059669',
+                    },
+                    radii: {
+                      borderRadiusButton: '0.75rem',
+                      buttonBorderRadius: '0.75rem',
+                      inputBorderRadius: '0.75rem',
+                    },
+                  },
+                },
+                className: {
+                  container: 'space-y-4',
+                  button: 'w-full px-4 py-3 rounded-xl font-medium transition-colors',
+                  input: 'w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-emerald-500',
+                  label: 'text-white',
+                },
+              }}
+              localization={{
+                variables: {
+                  sign_in: {
+                    email_label: 'Email',
+                    password_label: 'Şifrə',
+                    button_label: 'Daxil ol',
+                    loading_button_label: 'Daxil olunur...',
+                    social_provider_text: 'İlə daxil ol',
+                    link_text: 'Hesabınız var? Daxil olun',
+                  },
+                  sign_up: {
+                    email_label: 'Email',
+                    password_label: 'Şifrə',
+                    button_label: 'Qeydiyyat',
+                    loading_button_label: 'Qeydiyyat edilir...',
+                    social_provider_text: 'İlə qeydiyyatdan keç',
+                    link_text: 'Hesabınız yoxdur? Qeydiyyatdan keçin',
+                    confirmation_text: 'Email ünvanınıza təsdiq linki göndərildi',
+                  },
+                },
+              }}
+              providers={[]}
+              view="sign_up"
+              additionalData={{
+                first_name: '',
+                last_name: '',
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
