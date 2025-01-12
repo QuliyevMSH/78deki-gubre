@@ -10,8 +10,11 @@ export default function Auth() {
   const [lastName, setLastName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Qeydiyyat funksiyası
   const handleSignUp = async (e) => {
     e.preventDefault();
+
+    // Supabase-ə qeydiyyat sorğusu
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
