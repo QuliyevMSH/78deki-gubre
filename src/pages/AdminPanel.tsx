@@ -11,8 +11,6 @@ import { ProductsTable } from "@/components/admin/products/ProductsTable";
 import { EditProductForm } from "@/components/admin/products/EditProductForm";
 import { CommentsManagement } from "@/components/admin/comments/CommentsManagement";
 
-// ... keep existing code (state declarations and functions)
-
 export default function AdminPanel() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -60,43 +58,15 @@ export default function AdminPanel() {
 
   const handleDeleteProduct = async (id: number) => {
     try {
-      // First, try to find any basket items with this product
-      const { data: basketItems } = await supabase
+      // First, delete any basket items with this product
+      const { error: basketError } = await supabase
         .from("basket")
-        .select("*")
+        .delete()
         .eq("product_id", id);
 
-      if (basketItems && basketItems.length > 0) {
-        // Create a deleted product placeholder
-        const deletedProduct = {
-          name: "Məhsul silinib",
-          price: 0,
-          description: "Bu məhsul artıq mövcud deyil",
-          image: "/placeholder.svg",
-          category: "Silinmiş"
-        };
+      if (basketError) throw basketError;
 
-        // Insert the placeholder product
-        const { data: newProduct, error: insertError } = await supabase
-          .from("products")
-          .insert([deletedProduct])
-          .select()
-          .single();
-
-        if (insertError) throw insertError;
-
-        // Update all basket items to point to the new placeholder product
-        if (newProduct) {
-          const { error: updateError } = await supabase
-            .from("basket")
-            .update({ product_id: newProduct.id })
-            .eq("product_id", id);
-
-          if (updateError) throw updateError;
-        }
-      }
-
-      // Finally delete the original product
+      // Then delete the product
       const { error: deleteError } = await supabase
         .from("products")
         .delete()
