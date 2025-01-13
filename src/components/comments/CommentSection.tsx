@@ -38,7 +38,7 @@ export default function CommentSection() {
           *,
           user:profiles(first_name, last_name, avatar_url)
         `)
-        .eq('product_id', id)
+        .eq('product_id', parseInt(id || '0'))
         .is('parent_id', null)
         .order('created_at', { ascending: false });
 

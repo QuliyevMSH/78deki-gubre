@@ -35,12 +35,10 @@ export default function Auth() {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
-    // Redirect to home if user is already logged in
     if (user) {
       navigate('/');
     }
 
-    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
@@ -53,7 +51,7 @@ export default function Auth() {
           }
         }
         if (event === 'SIGNED_OUT') {
-          setErrorMessage(""); // Clear errors on sign out
+          setErrorMessage("");
         }
       }
     );
@@ -62,11 +60,14 @@ export default function Auth() {
   }, [navigate, user]);
 
   return (
-    <div className="min-h-screen bg-emerald-600 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-2xl font-semibold text-center mb-6">
-          Giriş / Qeydiyyat
-        </h1>
+    <div className="min-h-screen bg-[#F2FCE2] flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-lg">
+        <div className="flex items-center gap-2 mb-6">
+          <img src="/lovable-uploads/c0faf68e-dd54-416c-b19b-8b361ad336a6.png" alt="Logo" className="w-8 h-8" />
+          <h1 className="text-2xl font-semibold text-center">
+            Sizi aramızda görməyə sevinirik
+          </h1>
+        </div>
 
         {errorMessage && (
           <Alert variant="destructive" className="mb-6">
@@ -76,16 +77,45 @@ export default function Auth() {
 
         <SupabaseAuth
           supabaseClient={supabase}
+          providers={['google']}
           appearance={{
             theme: ThemeSupa,
             variables: {
               default: {
                 colors: {
-                  brand: '#059669',
-                  brandAccent: '#047857',
-                }
+                  brand: '#047857',
+                  brandAccent: '#065f46',
+                  brandButtonText: 'white',
+                  defaultButtonBackground: 'black',
+                  defaultButtonBackgroundHover: '#1f2937',
+                  inputBackground: 'white',
+                  inputBorder: '#e5e7eb',
+                  inputBorderHover: '#d1d5db',
+                  inputBorderFocus: '#047857',
+                },
+                space: {
+                  inputPadding: '12px',
+                  buttonPadding: '12px',
+                },
               }
-            }
+            },
+            style: {
+              button: {
+                width: '100%',
+                marginTop: '8px',
+              },
+              input: {
+                backgroundColor: 'white',
+                border: '1px solid #e5e7eb',
+              },
+              message: {
+                color: '#ef4444',
+              },
+              anchor: {
+                color: '#047857',
+                textDecoration: 'none',
+              },
+            },
           }}
           localization={{
             variables: {
@@ -94,12 +124,17 @@ export default function Auth() {
                 password_label: 'Şifrə',
                 button_label: 'Giriş',
                 loading_button_label: 'Giriş edilir...',
+                link_text: 'Artıq hesabınız var? Daxil olun',
+                social_provider_text: 'Google ilə davam et',
               },
               sign_up: {
                 email_label: 'Email',
                 password_label: 'Şifrə',
                 button_label: 'Qeydiyyat',
                 loading_button_label: 'Qeydiyyat edilir...',
+                link_text: 'Hesabınız yoxdur? Qeydiyyatdan keçin',
+                confirmation_text: 'Təsdiq emaili göndərildi',
+                social_provider_text: 'Google ilə davam et',
               },
             }
           }}

@@ -41,20 +41,54 @@ export type Database = {
           },
         ]
       }
-      feddback: {
+      comments: {
         Row: {
           content: string
+          created_at: string
           id: number
+          parent_id: number | null
+          product_id: number
+          user_id: string
         }
         Insert: {
           content: string
+          created_at?: string
           id?: number
+          parent_id?: number | null
+          product_id: number
+          user_id: string
         }
         Update: {
           content?: string
+          created_at?: string
           id?: number
+          parent_id?: number | null
+          product_id?: number
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {

@@ -13,29 +13,33 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <div className="product-card">
-      <div className="aspect-square overflow-hidden">
+    <div className="product-card overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
+      <div className="aspect-square overflow-hidden bg-[#7E69AB]">
         <img
           src={product.image}
           alt={product.name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover transition-transform duration-300"
           loading="lazy"
         />
       </div>
-      <div className="p-4">
-        <h3 className="text-lg font-semibold">{product.name}</h3>
-        <p className="mt-1 text-lg font-medium text-primary">
-          {formatPrice(product.price)}
-        </p>
-        <Button
-          asChild
-          className="mt-4 w-full"
-          onClick={handleClick}
-        >
-          <Link to={`/product/${product.id}`}>
-            Ətraflı
-          </Link>
-        </Button>
+      <div className="p-6 space-y-2">
+        <h3 className="text-2xl font-semibold text-gray-800">{product.name}</h3>
+        <p className="text-sm text-gray-600">{product.category}</p>
+        <p className="text-sm text-gray-700 line-clamp-2">{product.description}</p>
+        <div className="flex items-center justify-between pt-4">
+          <p className="text-xl font-medium text-gray-900">
+            {formatPrice(product.price)}
+          </p>
+          <Button
+            asChild
+            className="bg-[#7E69AB] hover:bg-[#9b87f5] text-white rounded-lg px-6"
+            onClick={handleClick}
+          >
+            <Link to={`/product/${product.id}`}>
+              Məhsula Bax
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

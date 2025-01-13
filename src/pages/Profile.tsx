@@ -5,13 +5,24 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Tables } from '@/integrations/supabase/types';
 
 type Profile = Pick<Tables<'profiles'>, 'first_name' | 'last_name' | 'avatar_url'>;
 
 export default function Profile() {
-  const { user } = useAuthStore();
+  const { user, signOut } = useAuthStore();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -76,7 +87,7 @@ export default function Profile() {
         .from('profiles')
         .select('first_name, last_name, avatar_url')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       
@@ -174,6 +185,36 @@ export default function Profile() {
     }
   }
 
+  const handleDeleteAccount = async () => {
+    try {
+      if (!user) return;
+
+      // Call our Edge Function using the Supabase client
+      const { error } = await supabase.functions.invoke('delete-user', {
+        body: { user_id: user.id },
+      });
+
+      if (error) throw error;
+
+      // Sign out immediately after successful deletion
+      await signOut();
+      
+      toast({
+        title: "Hesab silindi",
+        description: "Hesabınız uğurla silindi",
+      });
+
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      toast({
+        variant: "destructive",
+        title: "Xəta baş verdi",
+        description: "Hesabınız silinmədi",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -251,8 +292,33 @@ export default function Profile() {
           >
             Yadda saxla
           </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                className="w-full"
+              >
+                Hesabını sil
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Hesabınızı silmək istədiyinizə əminsiniz?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Bu əməliyyat geri qaytarıla bilməz. Hesabınız və bütün məlumatlarınız silinəcək.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>İmtina</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAccount}>
+                  Hesabı sil
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>
   );
-}
+};

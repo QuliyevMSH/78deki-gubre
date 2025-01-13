@@ -17,7 +17,7 @@ export const UserMenu = ({ user, onSignOut }: UserMenuProps) => {
         </Link>
       </Button>
       <Button variant="default" onClick={onSignOut}>
-        Çıxış
+        Hesabdan çıx
       </Button>
     </div>
   ) : (

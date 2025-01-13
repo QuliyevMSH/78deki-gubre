@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 
 interface MobileNavProps {
@@ -12,42 +12,46 @@ export const MobileNav = ({ isOpen, onOpenChange, isAdmin }: MobileNavProps) => 
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-[300px] sm:w-[400px]">
         <nav className="flex flex-col space-y-4">
-          <Link
+          <RouterLink
             to="/"
             className="nav-link"
             onClick={() => onOpenChange(false)}
           >
             Ana Səhifə
-          </Link>
-          <Link
-            to="/products"
+          </RouterLink>
+          
+          <RouterLink 
+            to="/" 
             className="nav-link"
             onClick={() => onOpenChange(false)}
           >
             Məhsullar
-          </Link>
-          <Link
+          </RouterLink>
+          
+          <RouterLink
             to="/about"
             className="nav-link"
             onClick={() => onOpenChange(false)}
           >
             Haqqımızda
-          </Link>
-          <Link
-            to="/contact"
+          </RouterLink>
+          
+          <RouterLink 
+            to="/contact" 
             className="nav-link"
             onClick={() => onOpenChange(false)}
           >
             Əlaqə
-          </Link>
+          </RouterLink>
+          
           {isAdmin && (
-            <Link
+            <RouterLink
               to="/admin"
               className="nav-link"
               onClick={() => onOpenChange(false)}
             >
               Admin Panel
-            </Link>
+            </RouterLink>
           )}
         </nav>
       </SheetContent>

@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import { Link as ScrollLink } from 'react-scroll';
 
 interface MainNavProps {
   isAdmin: boolean;
@@ -8,22 +9,26 @@ interface MainNavProps {
 export const MainNav = ({ isAdmin, className = "" }: MainNavProps) => {
   return (
     <nav className={`hidden md:flex items-center space-x-8 ${className}`}>
-      <Link to="/" className="nav-link">
+      <RouterLink to="/" className="nav-link">
         Ana Səhifə
-      </Link>
-      <Link to="/products" className="nav-link">
+      </RouterLink>
+      
+      <RouterLink to="/" className="nav-link">
         Məhsullar
-      </Link>
-      <Link to="/about" className="nav-link">
+      </RouterLink>
+      
+      <RouterLink to="/about" className="nav-link">
         Haqqımızda
-      </Link>
-      <Link to="/contact" className="nav-link">
+      </RouterLink>
+      
+      <RouterLink to="/contact" className="nav-link">
         Əlaqə
-      </Link>
+      </RouterLink>
+      
       {isAdmin && (
-        <Link to="/admin" className="nav-link">
+        <RouterLink to="/admin" className="nav-link">
           Admin Panel
-        </Link>
+        </RouterLink>
       )}
     </nav>
   );
