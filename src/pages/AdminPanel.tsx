@@ -162,7 +162,7 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" <main className="flex-grow" style={{ marginTop: '60px' }}>
+    <div className="min-h-screen bg-gray-50" <main className="flex-grow">
 >
       <AdminSidebar />
       <main className="pl-[240px] p-8">
