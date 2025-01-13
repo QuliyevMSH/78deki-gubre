@@ -11,13 +11,25 @@ interface UserMenuProps {
 export const UserMenu = ({ user, onSignOut }: UserMenuProps) => {
   return user ? (
     <div className="flex items-center gap-2">
-      <Button variant="ghost" size="icon" asChild>
+      <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
         <Link to="/profile">
           <UserIcon className="h-5 w-5" />
         </Link>
       </Button>
-      <Button variant="default" onClick={onSignOut}>
+      <Button 
+        variant="default" 
+        onClick={onSignOut}
+        className="hidden sm:flex"
+      >
         Hesabdan çıx
+      </Button>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={onSignOut}
+        className="sm:hidden"
+      >
+        <UserIcon className="h-5 w-5" />
       </Button>
     </div>
   ) : (
