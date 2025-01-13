@@ -162,34 +162,35 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" <main className="flex-grow">
->
-      <AdminSidebar />
-      <main className="pl-[240px] p-8">
-        <div className="max-w-[1200px] mx-auto">
-          <Routes>
-            <Route path="/" element={<DashboardView filteredProducts={filteredProducts} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
-            <Route path="/add" element={<AddProductForm newProduct={newProduct} setNewProduct={setNewProduct} handleAddProduct={handleAddProduct} />} />
-            <Route
-              path="/products"
-              element={
-                <>
-                  <ProductsTable
-                    products={products}
-                    setEditingProduct={setEditingProduct}
-                    handleDeleteProduct={handleDeleteProduct}
-                  />
-                  <EditProductForm
-                    product={editingProduct}
-                    onClose={() => setEditingProduct(null)}
-                    onUpdate={handleUpdateProduct}
-                  />
-                </>
-              }
-            />
-            <Route path="/users" element={<UserManagement />} />
-            <Route path="/comments" element={<CommentsManagement />} />
-          </Routes>
+    <div className="min-h-screen bg-gray-50">
+      <main className="flex-grow" style={{ marginTop: '60px' }}>
+        <AdminSidebar />
+        <div className="pl-[240px] p-8">
+          <div className="max-w-[1200px] mx-auto">
+            <Routes>
+              <Route path="/" element={<DashboardView filteredProducts={filteredProducts} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
+              <Route path="/add" element={<AddProductForm newProduct={newProduct} setNewProduct={setNewProduct} handleAddProduct={handleAddProduct} />} />
+              <Route
+                path="/products"
+                element={
+                  <>
+                    <ProductsTable
+                      products={products}
+                      setEditingProduct={setEditingProduct}
+                      handleDeleteProduct={handleDeleteProduct}
+                    />
+                    <EditProductForm
+                      product={editingProduct}
+                      onClose={() => setEditingProduct(null)}
+                      onUpdate={handleUpdateProduct}
+                    />
+                  </>
+                }
+              />
+              <Route path="/users" element={<UserManagement />} />
+              <Route path="/comments" element={<CommentsManagement />} />
+            </Routes>
+          </div>
         </div>
       </main>
     </div>
