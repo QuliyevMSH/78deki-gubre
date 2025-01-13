@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { formatPrice } from '@/lib/utils';
 import { Product } from '@/types';
+import { useCartStore } from '@/store/cart';
 import CommentSection from '@/components/comments/CommentSection';
 
 const ProductDetail = () => {
@@ -14,6 +15,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const addItem = useCartStore((state) => state.addItem);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -62,6 +64,8 @@ const ProductDetail = () => {
         return;
       }
 
+      if (!product) return;
+
       const { data: existingItem, error: fetchError } = await supabase
         .from('basket')
         .select('*')
@@ -92,6 +96,9 @@ const ProductDetail = () => {
 
         if (insertError) throw insertError;
       }
+
+      // Update local cart state immediately
+      addItem(product, quantity);
 
       toast({
         title: "Uğurlu",
