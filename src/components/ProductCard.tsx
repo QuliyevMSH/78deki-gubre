@@ -8,10 +8,6 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
-  const handleClick = () => {
-    console.log('Navigating to product:', product.id);
-  };
-
   return (
     <div className="product-card overflow-hidden rounded-3xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl">
       <div className="aspect-square overflow-hidden bg-[#7E69AB]">
@@ -30,15 +26,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           <p className="text-xl font-medium text-gray-900">
             {formatPrice(product.price)}
           </p>
-          <Button
-            asChild
-            className="bg-[#7E69AB] hover:bg-[#9b87f5] text-white rounded-lg px-6"
-            onClick={handleClick}
-          >
-            <Link to={`/product/${product.id}`}>
+          <Link to={`/product/${product.id}`}>
+            <Button
+              className="bg-[#7E69AB] hover:bg-[#9b87f5] text-white rounded-lg px-6"
+            >
               Məhsula Bax
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

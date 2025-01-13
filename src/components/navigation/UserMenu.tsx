@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { User } from '@supabase/supabase-js';
 import { Button } from '@/components/ui/button';
-import { User as UserIcon } from 'lucide-react';
+import { User as UserIcon, LogOut } from 'lucide-react';
 
 interface UserMenuProps {
   user: User | null;
@@ -23,14 +23,24 @@ export const UserMenu = ({ user, onSignOut }: UserMenuProps) => {
       >
         Hesabdan çıx
       </Button>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        onClick={onSignOut}
-        className="sm:hidden"
-      >
-        <UserIcon className="h-5 w-5" />
-      </Button>
+      <div className="flex gap-2 sm:hidden">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          asChild
+        >
+          <Link to="/profile">
+            <UserIcon className="h-5 w-5" />
+          </Link>
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={onSignOut}
+        >
+          <LogOut className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   ) : (
     <Link to="/auth">
