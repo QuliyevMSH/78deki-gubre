@@ -28,7 +28,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </p>
           <Link to={`/product/${product.id}`}>
             <Button
-              className="bg-[#7E69AB] hover:bg-[#9b87f5] text-white rounded-lg px-6"
+              className="bg-[#3D8F3B] hover:bg-[#84B953] text-white rounded-lg px-6"
             >
               Məhsula Bax
             </Button>
