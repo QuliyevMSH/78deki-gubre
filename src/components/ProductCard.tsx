@@ -22,7 +22,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">{product.name}</h3>
         <p className="text-sm text-gray-600">{product.category}</p>
         <p className="text-sm text-gray-700 line-clamp-2">{product.description}</p>
-        <div className="flex flex-col max-[450px]:space-y-3 min-[450px]:flex-row items-center justify-between pt-4">
+        <div className="flex flex-col max-[450px]:space-y-3 items-center justify-between pt-4">
           <p className="text-xl font-medium text-gray-900">
             {formatPrice(product.price)}
           </p>
