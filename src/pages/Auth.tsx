@@ -77,7 +77,7 @@ export default function Auth() {
 
         <SupabaseAuth
           supabaseClient={supabase}
-          providers={['google']}
+          providers={[]}
           appearance={{
             theme: ThemeSupa,
             variables: {
@@ -125,7 +125,6 @@ export default function Auth() {
                 button_label: 'Giriş',
                 loading_button_label: 'Giriş edilir...',
                 link_text: 'Artıq hesabınız var? Daxil olun',
-                social_provider_text: 'Google ilə davam et',
               },
               sign_up: {
                 email_label: 'Email',
@@ -134,7 +133,6 @@ export default function Auth() {
                 loading_button_label: 'Qeydiyyat edilir...',
                 link_text: 'Hesabınız yoxdur? Qeydiyyatdan keçin',
                 confirmation_text: 'Təsdiq emaili göndərildi',
-                social_provider_text: 'Google ilə davam et',
               },
             }
           }}
