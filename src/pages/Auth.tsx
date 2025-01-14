@@ -63,7 +63,7 @@ export default function Auth() {
     <div className="min-h-screen bg-[#F2FCE2] flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-lg">
         <div className="flex items-center gap-2 mb-6">
-          <img src="/lovable-uploads/c0faf68e-dd54-416c-b19b-8b361ad336a6.png" alt="Logo" className="w-8 h-8" />
+          <img src="/lovable-uploads/0e1e6550-b588-485a-bf15-83042085c242.png" alt="Logo" className="w-8 h-8" />
           <h1 className="text-2xl font-semibold text-center">
             Sizi aramızda görməyə sevinirik
           </h1>
