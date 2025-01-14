@@ -128,11 +128,12 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 glass-morphism">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {renderLogo()}
+          <div className="flex items-center">
+            {renderLogo()}
+            <MainNav isAdmin={isAdmin} className="ml-8" />
+          </div>
           
-          <MainNav isAdmin={isAdmin} />
-
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Sheet>
               <SheetTrigger asChild>
                 <Button

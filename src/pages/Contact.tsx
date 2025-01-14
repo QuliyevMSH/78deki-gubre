@@ -8,7 +8,7 @@ const Contact = () => {
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <img 
-              src="/lovable-uploads/7fd1fe12-5208-4df6-8807-8facc07e4f22.png" 
+              src="/lovable-uploads/0e1e6550-b588-485a-bf15-83042085c242.png" 
               alt="Əlaqə" 
               className="h-16"
             />

@@ -5,6 +5,7 @@ import { useToast } from './ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { formatPrice } from '@/lib/utils';
 import { CartList } from './cart/CartList';
+import { useCartStore } from '@/store/cart';
 
 interface BasketItem {
   id: number;
@@ -15,6 +16,7 @@ interface BasketItem {
     price: number;
     image: string;
     category: string;
+    description: string;
   };
 }
 
@@ -22,6 +24,7 @@ export const CartSheet = () => {
   const [basketItems, setBasketItems] = useState<BasketItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const updateCartItems = useCartStore(state => state.updateItems);
 
   const totalItems = basketItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -31,6 +34,7 @@ export const CartSheet = () => {
       
       if (!user) {
         setBasketItems([]);
+        updateCartItems([]);
         setLoading(false);
         return;
       }
@@ -45,14 +49,29 @@ export const CartSheet = () => {
             name,
             price,
             image,
-            category
+            category,
+            description
           )
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setBasketItems(data || []);
+      
+      const items = data || [];
+      setBasketItems(items);
+      
+      // Update global cart state
+      const cartItems = items.map(item => ({
+        id: item.products.id,
+        name: item.products.name,
+        price: item.products.price,
+        image: item.products.image,
+        category: item.products.category,
+        description: item.products.description,
+        quantity: item.quantity
+      }));
+      updateCartItems(cartItems);
     } catch (error) {
       console.error('Error fetching basket items:', error);
       toast({
@@ -66,25 +85,37 @@ export const CartSheet = () => {
   };
 
   useEffect(() => {
-    fetchBasketItems();
+    const setupRealtimeSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) return;
 
-    const channel = supabase
-      .channel('basket_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'basket'
-        },
-        () => {
-          fetchBasketItems();
-        }
-      )
-      .subscribe();
+      const channel = supabase
+        .channel('basket_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'basket',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            fetchBasketItems();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    };
+
+    fetchBasketItems();
+    const cleanup = setupRealtimeSubscription();
 
     return () => {
-      supabase.removeChannel(channel);
+      cleanup.then(cleanupFn => cleanupFn?.());
     };
   }, []);
 
@@ -101,6 +132,14 @@ export const CartSheet = () => {
         .eq('id', itemId);
 
       if (error) throw error;
+      
+      // Update local state immediately
+      setBasketItems(prev => prev.map(item => 
+        item.id === itemId ? { ...item, quantity: newQuantity } : item
+      ));
+      
+      // Trigger a fetch to ensure consistency
+      fetchBasketItems();
     } catch (error) {
       console.error('Error updating quantity:', error);
       toast({
@@ -121,6 +160,7 @@ export const CartSheet = () => {
       if (error) throw error;
 
       setBasketItems(prev => prev.filter(item => item.id !== itemId));
+      fetchBasketItems(); // Refresh cart data
     } catch (error) {
       console.error('Error removing item:', error);
       toast({
