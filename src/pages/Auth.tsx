@@ -136,6 +136,7 @@ export default function Auth() {
               },
             }
           }}
+          showLinks={false}
         />
       </div>
     </div>
