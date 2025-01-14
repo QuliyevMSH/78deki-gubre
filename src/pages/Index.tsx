@@ -39,7 +39,7 @@ export default function Index() {
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 [&>*]:max-w-[600px] [&>*]:mx-auto">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
