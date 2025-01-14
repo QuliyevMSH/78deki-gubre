@@ -19,7 +19,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         />
       </div>
       <div className="p-6 space-y-2">
-        <h3 className="text-2xl font-semibold text-gray-800">{product.name}</h3>
+        <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">{product.name}</h3>
         <p className="text-sm text-gray-600">{product.category}</p>
         <p className="text-sm text-gray-700 line-clamp-2">{product.description}</p>
         <div className="flex items-center justify-between pt-4">
