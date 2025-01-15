@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CartItem } from "@/types";
 
 type PaymentMethod = 'online' | 'cash';
 
@@ -23,7 +24,6 @@ export default function Payment() {
     email: "",
     phone: "",
     address: "",
-    // Card details for online payment
     cardNumber: "",
     expiryDate: "",
     cvv: "",
@@ -47,7 +47,6 @@ export default function Payment() {
         return;
       }
 
-      // Create order with status based on payment method
       const { error } = await supabase.from("orders").insert({
         user_id: user.id,
         total_amount: total,
@@ -86,8 +85,7 @@ export default function Payment() {
   };
 
   if (items.length === 0) {
-    navigate("/");
-    return null;
+    return navigate("/");
   }
 
   return (
@@ -101,10 +99,10 @@ export default function Payment() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {items.map((item) => (
+              {items.map((item: CartItem) => (
                 <div key={item.id} className="flex justify-between">
-                  <span>{item.products.name} x {item.quantity}</span>
-                  <span>{formatPrice(item.products.price * item.quantity)}</span>
+                  <span>{item.products?.name} x {item.quantity}</span>
+                  <span>{formatPrice(item.products?.price * item.quantity)}</span>
                 </div>
               ))}
               <div className="border-t pt-2 mt-4">
