@@ -18,27 +18,32 @@ export const useCartStore = create<CartStore>()(
       items: [],
       addItem: (product: Product, quantity = 1) => {
         const items = get().items;
-        const existingItem = items.find((item) => item.id === product.id);
+        const existingItem = items.find((item) => item.products.id === product.id);
 
         if (existingItem) {
           set({
             items: items.map((item) =>
-              item.id === product.id
+              item.products.id === product.id
                 ? { ...item, quantity: item.quantity + quantity }
                 : item
             ),
           });
         } else {
-          set({ items: [...items, { ...product, quantity }] });
+          const newItem: CartItem = {
+            id: product.id,
+            quantity,
+            products: product
+          };
+          set({ items: [...items, newItem] });
         }
       },
       removeItem: (productId: number) => {
-        set({ items: get().items.filter((item) => item.id !== productId) });
+        set({ items: get().items.filter((item) => item.products.id !== productId) });
       },
       updateQuantity: (productId: number, quantity: number) => {
         set({
           items: get().items.map((item) =>
-            item.id === productId ? { ...item, quantity } : item
+            item.products.id === productId ? { ...item, quantity } : item
           ),
         });
       },
@@ -48,7 +53,7 @@ export const useCartStore = create<CartStore>()(
       clearCart: () => set({ items: [] }),
       get total() {
         return get().items.reduce(
-          (total, item) => total + item.price * item.quantity,
+          (total, item) => total + item.products.price * item.quantity,
           0
         );
       },

@@ -13,7 +13,7 @@ import { CartItem } from "@/types";
 
 type PaymentMethod = 'online' | 'cash';
 
-export default function Payment() {
+export default function Payment(): JSX.Element {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { items, total, clearCart } = useCartStore();
@@ -85,7 +85,8 @@ export default function Payment() {
   };
 
   if (items.length === 0) {
-    return navigate("/");
+    navigate("/");
+    return <></>;
   }
 
   return (
