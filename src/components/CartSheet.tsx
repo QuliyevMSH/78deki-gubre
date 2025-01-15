@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useToast } from './ui/use-toast';
@@ -21,12 +22,11 @@ interface BasketItem {
 }
 
 export const CartSheet = () => {
+  const navigate = useNavigate();
   const [basketItems, setBasketItems] = useState<BasketItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const updateCartItems = useCartStore(state => state.updateItems);
-
-  const totalItems = basketItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const fetchBasketItems = async () => {
     try {
@@ -171,6 +171,24 @@ export const CartSheet = () => {
     }
   };
 
+  const handleCheckout = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Xəta",
+        description: "Zəhmət olmasa daxil olun",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    navigate("/payment");
+  };
+
+  const totalItems = basketItems.reduce((sum, item) => sum + item.quantity, 0);
+  
   const total = basketItems.reduce(
     (sum, item) => sum + (item.products?.price || 0) * item.quantity,
     0
@@ -209,7 +227,12 @@ export const CartSheet = () => {
             <p>Cəmi</p>
             <p>{formatPrice(total)}</p>
           </div>
-          <Button className="mt-6 w-full">Sifarişi tamamla</Button>
+          <Button 
+            className="mt-6 w-full"
+            onClick={handleCheckout}
+          >
+            Sifarişi tamamla
+          </Button>
         </div>
       )}
     </SheetContent>

@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
+import { ThumbsUp } from 'lucide-react';
 
 interface Comment {
   id: number;
@@ -20,6 +21,8 @@ interface Comment {
     last_name: string | null;
     avatar_url: string | null;
   } | null;
+  likes: number;
+  user_has_liked: boolean;
 }
 
 export default function CommentSection() {
@@ -32,18 +35,27 @@ export default function CommentSection() {
 
   const fetchComments = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
         .select(`
           *,
-          user:profiles(first_name, last_name, avatar_url)
+          user:profiles(first_name, last_name, avatar_url),
+          likes:comment_likes(count),
+          user_has_liked:comment_likes!left(user_id)
         `)
         .eq('product_id', parseInt(id || '0'))
         .is('parent_id', null)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setComments(data || []);
+      if (commentsError) throw commentsError;
+
+      const formattedComments = commentsData?.map(comment => ({
+        ...comment,
+        likes: comment.likes?.[0]?.count || 0,
+        user_has_liked: comment.user_has_liked?.some(like => like.user_id === user?.id) || false
+      })) || [];
+
+      setComments(formattedComments);
     } catch (error) {
       console.error('Error fetching comments:', error);
       toast({
@@ -57,6 +69,31 @@ export default function CommentSection() {
   useEffect(() => {
     fetchComments();
   }, [id]);
+
+  const ensureProfileExists = async () => {
+    if (!user) return false;
+
+    // Check if profile exists
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle(); // Changed from single() to maybeSingle()
+
+    if (!profile) {
+      // Create profile if it doesn't exist
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert({ id: user.id });
+
+      if (insertError) {
+        console.error('Error creating profile:', insertError);
+        return false;
+      }
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +117,12 @@ export default function CommentSection() {
 
     setLoading(true);
     try {
+      // Ensure profile exists before adding comment
+      const profileExists = await ensureProfileExists();
+      if (!profileExists) {
+        throw new Error("Profile could not be created");
+      }
+
       const { error } = await supabase
         .from('comments')
         .insert({
@@ -105,6 +148,65 @@ export default function CommentSection() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLike = async (commentId: number, isLiked: boolean) => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Xəta",
+        description: "Like etmək üçün daxil olmalısınız",
+      });
+      return;
+    }
+
+    try {
+      // Ensure profile exists before adding/removing like
+      const profileExists = await ensureProfileExists();
+      if (!profileExists) {
+        throw new Error("Profile could not be created");
+      }
+
+      if (isLiked) {
+        // Remove like
+        const { error } = await supabase
+          .from('comment_likes')
+          .delete()
+          .eq('comment_id', commentId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+      } else {
+        // Add like
+        const { error } = await supabase
+          .from('comment_likes')
+          .insert({
+            comment_id: commentId,
+            user_id: user.id,
+          });
+
+        if (error) {
+          if (error.code === '23505') {
+            toast({
+              variant: "destructive",
+              title: "Xəta",
+              description: "Bu rəyi artıq like etmisiniz",
+            });
+            return;
+          }
+          throw error;
+        }
+      }
+
+      fetchComments();
+    } catch (error) {
+      console.error('Error handling like:', error);
+      toast({
+        variant: "destructive",
+        title: "Xəta baş verdi",
+        description: "Əməliyyat uğursuz oldu",
+      });
     }
   };
 
@@ -147,7 +249,19 @@ export default function CommentSection() {
                 </p>
               </div>
             </div>
-            <p className="text-gray-700">{comment.content}</p>
+            <p className="text-gray-700 mb-3">{comment.content}</p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={comment.user_has_liked ? "default" : "outline"}
+                size="sm"
+                className="gap-2"
+                onClick={() => handleLike(comment.id, comment.user_has_liked)}
+                disabled={!user}
+              >
+                <ThumbsUp className="w-4 h-4" />
+                <span>{comment.likes}</span>
+              </Button>
+            </div>
           </div>
         ))}
       </div>

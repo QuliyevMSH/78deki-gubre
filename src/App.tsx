@@ -9,6 +9,7 @@ import ProductDetail from './pages/ProductDetail';
 import Profile from './pages/Profile';
 import AboutPage from './pages/About';
 import Contact from './pages/Contact';
+import Payment from './pages/Payment';
 import { Toaster } from './components/ui/toaster';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/payment" element={<Payment />} />
         </Routes>
       </main>
       <Footer />

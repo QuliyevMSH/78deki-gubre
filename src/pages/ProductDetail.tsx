@@ -185,13 +185,6 @@ const ProductDetail = () => {
             >
               Səbətə əlavə et
             </Button>
-
-            <div className="mt-8 flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Paylaş:</span>
-              <Button variant="ghost" size="icon" className="text-gray-600">
-                <Share2 className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
         

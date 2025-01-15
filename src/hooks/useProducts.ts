@@ -42,27 +42,29 @@ export const useProducts = () => {
 
   const handleDeleteProduct = async (id: number) => {
     try {
-      const { error: basketError } = await supabase
-        .from("basket")
-        .delete()
-        .eq("product_id", id);
+      const { error } = await supabase
+        .rpc('delete_product_with_baskets', {
+          product_id: id
+        });
 
-      if (basketError) throw basketError;
+      if (error) {
+        console.error("Error deleting product:", error);
+        toast({
+          variant: "destructive",
+          title: "Xəta",
+          description: "Məhsul silinmədi",
+        });
+        return;
+      }
 
-      const { error: deleteError } = await supabase
-        .from("products")
-        .delete()
-        .eq("id", id);
-
-      if (deleteError) throw deleteError;
-
+      // Update local state only after successful deletion
+      setProducts(prev => prev.filter(product => product.id !== id));
+      setFilteredProducts(prev => prev.filter(product => product.id !== id));
+      
       toast({
         title: "Uğurlu",
         description: "Məhsul silindi",
       });
-
-      setProducts(prev => prev.filter(product => product.id !== id));
-      setFilteredProducts(prev => prev.filter(product => product.id !== id));
     } catch (error: any) {
       console.error("Error in delete operation:", error);
       toast({
