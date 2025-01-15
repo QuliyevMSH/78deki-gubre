@@ -47,14 +47,14 @@ export default function Payment() {
         return;
       }
 
-      // For now, we'll just create the order without processing actual payment
+      // Create order with status based on payment method
       const { error } = await supabase.from("orders").insert({
         user_id: user.id,
         total_amount: total,
         shipping_address: formData.address,
         phone: formData.phone,
         email: formData.email,
-        payment_method: paymentMethod
+        status: paymentMethod === 'online' ? 'paid' : 'pending'
       });
 
       if (error) throw error;
