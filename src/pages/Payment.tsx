@@ -103,8 +103,8 @@ export default function Payment() {
             <div className="space-y-2">
               {items.map((item) => (
                 <div key={item.id} className="flex justify-between">
-                  <span>{item.name} x {item.quantity}</span>
-                  <span>{formatPrice(item.price * item.quantity)}</span>
+                  <span>{item.products.name} x {item.quantity}</span>
+                  <span>{formatPrice(item.products.price * item.quantity)}</span>
                 </div>
               ))}
               <div className="border-t pt-2 mt-4">
