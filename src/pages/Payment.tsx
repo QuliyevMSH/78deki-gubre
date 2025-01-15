@@ -15,15 +15,17 @@ type PaymentMethod = 'online' | 'cash';
 export default function Payment() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { items, total, clearCart } = useCartStore();
+  const { items, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('online');
+  
+  // Calculate total price from cart items
+  const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
     address: "",
-    // Card details for online payment
     cardNumber: "",
     expiryDate: "",
     cvv: "",
@@ -47,10 +49,9 @@ export default function Payment() {
         return;
       }
 
-      // Create order with status based on payment method
       const { error } = await supabase.from("orders").insert({
         user_id: user.id,
-        total_amount: total,
+        total_amount: totalPrice,
         shipping_address: formData.address,
         phone: formData.phone,
         email: formData.email,
@@ -110,7 +111,7 @@ export default function Payment() {
               <div className="border-t pt-2 mt-4">
                 <div className="flex justify-between font-bold">
                   <span>Cəmi</span>
-                  <span>{formatPrice(total)}</span>
+                  <span>{formatPrice(totalPrice)}</span>
                 </div>
               </div>
             </div>
