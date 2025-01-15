@@ -23,6 +23,8 @@ export default function Payment() {
   const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   
   const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     address: "",
@@ -55,6 +57,8 @@ export default function Payment() {
         shipping_address: formData.address,
         phone: formData.phone,
         email: formData.email,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
         status: paymentMethod === 'online' ? 'paid' : 'pending'
       });
 
@@ -194,6 +198,30 @@ export default function Payment() {
                 </div>
               ) : (
                 <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="firstName">Ad</Label>
+                    <Input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      required
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="Adınız"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">Soyad</Label>
+                    <Input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      required
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder="Soyadınız"
+                    />
+                  </div>
                   <div>
                     <Label htmlFor="email">Email</Label>
                     <Input
