@@ -6,16 +6,28 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCartStore } from "@/store/cart";
 import { formatPrice } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+type PaymentMethod = 'online' | 'cash';
 
 export default function Payment() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { items, total, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('online');
+  
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
     address: "",
+    // Card details for online payment
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardHolder: ""
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,12 +47,14 @@ export default function Payment() {
         return;
       }
 
+      // For now, we'll just create the order without processing actual payment
       const { error } = await supabase.from("orders").insert({
         user_id: user.id,
         total_amount: total,
         shipping_address: formData.address,
         phone: formData.phone,
         email: formData.email,
+        payment_method: paymentMethod
       });
 
       if (error) throw error;
@@ -50,7 +64,6 @@ export default function Payment() {
         description: "Sifarişiniz qəbul edildi",
       });
 
-      // Clear cart after successful order
       clearCart();
       navigate("/");
     } catch (error) {
@@ -82,77 +95,152 @@ export default function Payment() {
       <div className="max-w-2xl mx-auto p-4">
         <h1 className="text-2xl font-bold mb-8">Ödəniş məlumatları</h1>
         
-        <div className="bg-white p-6 rounded-lg shadow mb-6">
-          <h2 className="text-lg font-semibold mb-4">Sifariş məlumatları</h2>
-          <div className="space-y-2">
-            {items.map((item) => (
-              <div key={item.id} className="flex justify-between">
-                <span>{item.name} x {item.quantity}</span>
-                <span>{formatPrice(item.price * item.quantity)}</span>
-              </div>
-            ))}
-            <div className="border-t pt-2 mt-4">
-              <div className="flex justify-between font-bold">
-                <span>Cəmi</span>
-                <span>{formatPrice(total)}</span>
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Sifariş məlumatları</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {items.map((item) => (
+                <div key={item.id} className="flex justify-between">
+                  <span>{item.name} x {item.quantity}</span>
+                  <span>{formatPrice(item.price * item.quantity)}</span>
+                </div>
+              ))}
+              <div className="border-t pt-2 mt-4">
+                <div className="flex justify-between font-bold">
+                  <span>Cəmi</span>
+                  <span>{formatPrice(total)}</span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
-            </label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email ünvanınız"
-            />
-          </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Ödəniş üsulu</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <RadioGroup
+                defaultValue="online"
+                onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
+                className="space-y-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="online" id="online" />
+                  <Label htmlFor="online">Onlayn ödəmə</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="cash" id="cash" />
+                  <Label htmlFor="cash">Qapıda ödəmə</Label>
+                </div>
+              </RadioGroup>
 
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium mb-1">
-              Telefon
-            </label>
-            <Input
-              id="phone"
-              name="phone"
-              type="tel"
-              required
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Telefon nömrəniz"
-            />
-          </div>
+              {paymentMethod === 'online' ? (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="cardNumber">Kart nömrəsi</Label>
+                    <Input
+                      id="cardNumber"
+                      name="cardNumber"
+                      type="text"
+                      required
+                      value={formData.cardNumber}
+                      onChange={handleChange}
+                      placeholder="0000 0000 0000 0000"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="expiryDate">Bitmə tarixi</Label>
+                      <Input
+                        id="expiryDate"
+                        name="expiryDate"
+                        type="text"
+                        required
+                        value={formData.expiryDate}
+                        onChange={handleChange}
+                        placeholder="MM/YY"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="cvv">CVV</Label>
+                      <Input
+                        id="cvv"
+                        name="cvv"
+                        type="text"
+                        required
+                        value={formData.cvv}
+                        onChange={handleChange}
+                        placeholder="123"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="cardHolder">Kart sahibinin adı</Label>
+                    <Input
+                      id="cardHolder"
+                      name="cardHolder"
+                      type="text"
+                      required
+                      value={formData.cardHolder}
+                      onChange={handleChange}
+                      placeholder="Ad Soyad"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Email ünvanınız"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Telefon</Label>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="Telefon nömrəniz"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="address">Çatdırılma ünvanı</Label>
+                    <Input
+                      id="address"
+                      name="address"
+                      required
+                      value={formData.address}
+                      onChange={handleChange}
+                      placeholder="Tam ünvan"
+                    />
+                  </div>
+                </div>
+              )}
 
-          <div>
-            <label htmlFor="address" className="block text-sm font-medium mb-1">
-              Çatdırılma ünvanı
-            </label>
-            <Input
-              id="address"
-              name="address"
-              required
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Tam ünvan"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading}
-          >
-            {loading ? "Gözləyin..." : "Sifarişi təsdiqlə"}
-          </Button>
-        </form>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? "Gözləyin..." : "Sifarişi təsdiqlə"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
