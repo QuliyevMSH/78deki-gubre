@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -18,8 +18,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tables } from '@/integrations/supabase/types';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Profile = Pick<Tables<'profiles'>, 'first_name' | 'last_name' | 'avatar_url'>;
+
+interface UserComment {
+  id: number;
+  content: string;
+  created_at: string;
+  product: {
+    id: number;
+    name: string;
+    image: string;
+  };
+}
 
 export default function Profile() {
   const { user, signOut } = useAuthStore();
@@ -27,6 +40,7 @@ export default function Profile() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [userComments, setUserComments] = useState<UserComment[]>([]);
   const [profile, setProfile] = useState<Profile>({
     first_name: '',
     last_name: '',
@@ -48,7 +62,10 @@ export default function Profile() {
         }
 
         if (mounted) {
-          await getProfile(session.user.id);
+          await Promise.all([
+            getProfile(session.user.id),
+            fetchUserComments(session.user.id)
+          ]);
         }
       } catch (error) {
         console.error('Session error:', error);
@@ -71,7 +88,10 @@ export default function Profile() {
       if (event === 'SIGNED_OUT') {
         navigate('/auth');
       } else if (session && mounted) {
-        await getProfile(session.user.id);
+        await Promise.all([
+          getProfile(session.user.id),
+          fetchUserComments(session.user.id)
+        ]);
       }
     });
 
@@ -80,6 +100,36 @@ export default function Profile() {
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
+
+  const fetchUserComments = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .select(`
+          id,
+          content,
+          created_at,
+          product:products (
+            id,
+            name,
+            image
+          )
+        `)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      setUserComments(data || []);
+    } catch (error) {
+      console.error('Error fetching user comments:', error);
+      toast({
+        variant: "destructive",
+        title: "Xəta baş verdi",
+        description: "Rəylər yüklənmədi",
+      });
+    }
+  };
 
   async function getProfile(userId: string) {
     try {
@@ -225,100 +275,153 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen pt-20 px-4">
-      <div className="max-w-xl mx-auto bg-white rounded-lg shadow p-8">
-        <div className="flex flex-col items-center mb-8">
-          <div className="relative w-32 h-32 mb-4">
-            <img
-              src={profile.avatar_url || '/placeholder.svg'}
-              alt="Profile"
-              className="w-full h-full rounded-full object-cover"
-            />
-            <label
-              htmlFor="avatar"
-              className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer hover:bg-primary/90"
-            >
-              <input
-                type="file"
-                id="avatar"
-                className="hidden"
-                accept="image/*"
-                onChange={uploadAvatar}
-                disabled={uploading}
-              />
-              {uploading ? '...' : '✏️'}
-            </label>
-          </div>
-          <h2 className="text-2xl font-semibold">
-            {profile.first_name} {profile.last_name}
-          </h2>
-          <p className="text-muted-foreground">{user?.email}</p>
-        </div>
+      <div className="max-w-4xl mx-auto">
+        <div className="grid gap-8 md:grid-cols-[1fr,2fr]">
+          {/* Profile Information Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Profil Məlumatları</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center mb-8">
+                <div className="relative w-32 h-32 mb-4">
+                  <img
+                    src={profile.avatar_url || '/placeholder.svg'}
+                    alt="Profile"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                  <label
+                    htmlFor="avatar"
+                    className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer hover:bg-primary/90"
+                  >
+                    <input
+                      type="file"
+                      id="avatar"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={uploadAvatar}
+                      disabled={uploading}
+                    />
+                    {uploading ? '...' : '✏️'}
+                  </label>
+                </div>
+                <h2 className="text-2xl font-semibold">
+                  {profile.first_name} {profile.last_name}
+                </h2>
+                <p className="text-muted-foreground">{user?.email}</p>
+              </div>
 
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">Ad</Label>
-              <Input
-                id="firstName"
-                type="text"
-                value={profile.first_name}
-                onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Soyad</Label>
-              <Input
-                id="lastName"
-                type="text"
-                value={profile.last_name}
-                onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
-              />
-            </div>
-          </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Ad</Label>
+                    <Input
+                      id="firstName"
+                      type="text"
+                      value={profile.first_name || ''}
+                      onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Soyad</Label>
+                    <Input
+                      id="lastName"
+                      type="text"
+                      value={profile.last_name || ''}
+                      onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
+                    />
+                  </div>
+                </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={user?.email || ''}
-              disabled
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={user?.email || ''}
+                    disabled
+                  />
+                </div>
 
-          <Button
-            className="w-full"
-            onClick={updateProfile}
-          >
-            Yadda saxla
-          </Button>
+                <Button
+                  className="w-full"
+                  onClick={updateProfile}
+                >
+                  Yadda saxla
+                </Button>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="destructive"
-                className="w-full"
-              >
-                Hesabını sil
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Hesabınızı silmək istədiyinizə əminsiniz?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Bu əməliyyat geri qaytarıla bilməz. Hesabınız və bütün məlumatlarınız silinəcək.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>İmtina</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAccount}>
-                  Hesabı sil
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="destructive"
+                      className="w-full"
+                    >
+                      Hesabını sil
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Hesabınızı silmək istədiyinizə əminsiniz?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Bu əməliyyat geri qaytarıla bilməz. Hesabınız və bütün məlumatlarınız silinəcək.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>İmtina</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteAccount}>
+                        Hesabı sil
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* User Comments Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Mənim Rəylərim</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[600px] pr-4">
+                {userComments.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">
+                    Hələ heç bir rəy yazmamısınız
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {userComments.map((comment) => (
+                      <Link 
+                        key={comment.id}
+                        to={`/products/${comment.product.id}`}
+                        className="block"
+                      >
+                        <Card className="hover:bg-accent transition-colors">
+                          <CardContent className="flex items-start gap-4 pt-6">
+                            <img
+                              src={comment.product.image}
+                              alt={comment.product.name}
+                              className="w-16 h-16 object-cover rounded"
+                            />
+                            <div className="flex-1">
+                              <h3 className="font-medium mb-2">{comment.product.name}</h3>
+                              <p className="text-sm text-muted-foreground">{comment.content}</p>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                {new Date(comment.created_at).toLocaleDateString('az-AZ')}
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
   );
-};
+}
