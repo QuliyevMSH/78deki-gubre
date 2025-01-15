@@ -7,8 +7,6 @@ export interface Product {
   category: string;
 }
 
-export interface CartItem {
-  id: number;
+export interface CartItem extends Product {
   quantity: number;
-  products: Product;
 }

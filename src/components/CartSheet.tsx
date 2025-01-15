@@ -64,15 +64,12 @@ export const CartSheet = () => {
       // Update global cart state
       const cartItems = items.map(item => ({
         id: item.products.id,
-        quantity: item.quantity,
-        products: {
-          id: item.products.id,
-          name: item.products.name,
-          price: item.products.price,
-          image: item.products.image,
-          category: item.products.category,
-          description: item.products.description,
-        }
+        name: item.products.name,
+        price: item.products.price,
+        image: item.products.image,
+        category: item.products.category,
+        description: item.products.description,
+        quantity: item.quantity
       }));
       updateCartItems(cartItems);
     } catch (error) {
